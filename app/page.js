@@ -45,6 +45,8 @@ export default function Home() {
     };
 
     const [refreshingAll, setRefreshingAll] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('updated_desc');
 
     const handleRefreshAll = async () => {
         setRefreshingAll(true);
@@ -60,6 +62,27 @@ export default function Home() {
             setRefreshingAll(false);
         }
     };
+
+    // Filter and Sort Logic
+    const filteredProducts = products
+        .filter(product => {
+            if (!searchQuery) return true;
+            return (product.title || '').toLowerCase().includes(searchQuery.toLowerCase());
+        })
+        .sort((a, b) => {
+            switch (sortBy) {
+                case 'price_asc':
+                    return (parseFloat(a.current_price?.replace(/[^0-9.]/g, '') || 0) - parseFloat(b.current_price?.replace(/[^0-9.]/g, '') || 0));
+                case 'price_desc':
+                    return (parseFloat(b.current_price?.replace(/[^0-9.]/g, '') || 0) - parseFloat(a.current_price?.replace(/[^0-9.]/g, '') || 0));
+                case 'title_asc':
+                    return (a.title || '').localeCompare(b.title || '');
+                case 'updated_desc':
+                    return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+                default:
+                    return 0;
+            }
+        });
 
     return (
         <main className="container">
@@ -77,16 +100,47 @@ export default function Home() {
 
             <AddProductForm onAdd={handleAddProduct} />
 
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+                <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="input"
+                    style={{ flex: 2 }}
+                />
+                <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="input"
+                    style={{ flex: 1, cursor: 'pointer' }}
+                >
+                    <option value="updated_desc">Recently Updated</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="title_asc">Name: A-Z</option>
+                </select>
+            </div>
+
             {loading ? (
                 <div style={{ textAlign: 'center', color: '#94a3b8' }}>Loading tracked products...</div>
-            ) : products.length === 0 ? (
+            ) : filteredProducts.length === 0 ? (
                 <div className="empty-state">
-                    <h2>No products tracked yet</h2>
-                    <p>Add an Amazon.ae URL above to start tracking prices.</p>
+                    {searchQuery ? (
+                        <>
+                            <h2>No products match your search</h2>
+                            <p>Try a different keyword.</p>
+                        </>
+                    ) : (
+                        <>
+                            <h2>No products tracked yet</h2>
+                            <p>Add an Amazon.ae URL above to start tracking prices.</p>
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="grid">
-                    {products.map(product => (
+                    {filteredProducts.map(product => (
                         <ProductCard key={product.id} product={product} onRefresh={handleRefreshProduct} />
                     ))}
                 </div>
