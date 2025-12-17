@@ -44,10 +44,35 @@ export default function Home() {
         }
     };
 
+    const [refreshingAll, setRefreshingAll] = useState(false);
+
+    const handleRefreshAll = async () => {
+        setRefreshingAll(true);
+        try {
+            const res = await fetch('/api/products/refresh-all', { method: 'POST' });
+            if (res.ok) {
+                // Ideally we should re-fetch all products after bulk refresh to get latest data
+                await fetchProducts();
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setRefreshingAll(false);
+        }
+    };
+
     return (
         <main className="container">
             <header className="header">
                 <h1 className="title">Amazon.ae Tracker</h1>
+                <button
+                    onClick={handleRefreshAll}
+                    className="btn btn-outline"
+                    disabled={refreshingAll || loading || products.length === 0}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                    {refreshingAll ? <span className="spin">⟳</span> : '⟳'} Refresh All
+                </button>
             </header>
 
             <AddProductForm onAdd={handleAddProduct} />
