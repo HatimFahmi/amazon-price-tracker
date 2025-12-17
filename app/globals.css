@@ -17,7 +17,7 @@ body {
   padding: 0;
   min-height: 100vh;
   background-image: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.3) 0px, transparent 50%),
-                    radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+    radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
   background-attachment: fixed;
 }
 
@@ -25,6 +25,13 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
 }
 
 .header {
@@ -52,6 +59,17 @@ body {
 }
 
 /* Card Styles */
+.modal-content {
+  background: var(--card-bg);
+  padding: 2rem 4rem;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  width: 90%;
+  max-width: 700px;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 .card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -177,12 +195,17 @@ body {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
-    text-align: center;
-    padding: 4rem;
-    color: #94a3b8;
+  text-align: center;
+  padding: 4rem;
+  color: #94a3b8;
 }
